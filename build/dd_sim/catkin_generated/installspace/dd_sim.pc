@@ -1,0 +1,8 @@
+prefix=/home/leng/tide/DDsim6063/install
+
+Name: dd_sim
+Description: Description of dd_sim
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

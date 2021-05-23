@@ -1,0 +1,225 @@
+<?xml version='1.0'?>
+
+<robot name="DD" xmlns:xacro = "http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find dd_sim)/model/dd.gazebo" /> <!--เรียก file dd.gazeobo plug-in ต่างๆของ robot ก็จะอยู่ในนี้--> 
+    <xacro:include filename="$(find dd_sim)/model/materials.xacro" /> <!--เรียก file material.xacro-->
+    <xacro:property name="height3" value="0.2" /> <!--ประกาศตัวแปร height3 ผ่าน xacro:property ประกาศตรงนี้ที่เดียวไม่ต้องใส่ค่าใหม่หลายรอบ-->
+    <xacro:property name="axel_offset" value="0.05" /> <!-- ประกาศตัวแปร axel_offset ผ่าน xacro:property -->
+    <xacro:property name="camera_link" value="0.05" /> <!-- ประกาศตัวแปร camera_link ผ่าน xacro:property-->
+
+    <!--ต่อไปเป็นการสร้าง robot ผ่านทางการบอก link&joint เริ่มจาก DDbase ต่อกับ left right_wheel และ ต่อกับ camera hokuyolink sensor -->
+    <!--การบอกการเชื่อมต่อก็จะอิงแต่ละ frame ของ link ว่าแต่ละ link ไปอีก link ต่อ transfrom x y z roll pitch yaw เท่าไหร่-->
+    <!--การบอกคุณสมบัติของแต่ละ link เช่น Inertia weight collision จุดอ้างอิง(origin) visual(ให้แสดงออกมาในรูปแบบไหน อาจจะ import มาได้) friction เป็นต้น-->
+    <!--การบอกประเภท joint เป็น continuous เคลื่อนที่ หรือแบบ fixed บอก parent กับ child ที่เชื่อม  dampling  limit friction-->
+
+    <link name="DDbase">
+        <pose>0 0 0.1 0 0 0</pose>
+
+        <inertial>
+        <mass value="8.0"/>
+        <origin xyz="0.0 0 0" rpy=" 0 0 0"/>
+        <inertia
+            ixx="1" ixy="0" ixz="0"
+            iyy="1.0" iyz="0"
+            izz="1"
+        />
+        </inertial>
+
+        <collision name='collision'>
+        <geometry>
+            <!-- <cylinder radius="0.3" length="0.3"/> -->
+            <box size=".5 .3 .3"/>
+        </geometry>
+        </collision>
+
+        <visual name='DDbase_visual'>
+            <origin xyz="0 0 0" rpy=" 0 0 0"/>
+            <geometry>
+                <box size=".5 .3 .3"/>
+            </geometry>
+            <material name="orange"/>
+        </visual>
+
+
+        <collision name='support'>
+        <origin xyz="-0.15 0 -0.15" rpy=" 0 0 0"/>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        <surface>
+            <friction>
+            <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+                <slip1>1.0</slip1>
+                <slip2>1.0</slip2>
+            </ode>
+            </friction>
+        </surface>
+        </collision>
+
+        <visual name='support_visual'>
+        <origin xyz="-0.15 0 -0.15" rpy=" 0 0 0"/>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        <material name="green"/>
+        </visual>
+
+        <collision name='support2'>
+        <origin xyz="0.15 0 -0.15" rpy=" 0 0 0"/>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        <surface>
+            <friction>
+            <ode>
+                <mu>0</mu>
+                <mu2>0</mu2>
+                <slip1>1.0</slip1>
+                <slip2>1.0</slip2>
+            </ode>
+            </friction>
+        </surface>
+        </collision>
+
+        <visual name='support2_visual'>
+        <origin xyz="0.15 0 -0.15" rpy=" 0 0 0"/>
+        <geometry>
+            <sphere radius="0.05"/>
+        </geometry>
+        <material name="green"/>
+        </visual>
+    </link>
+    
+    <link name="left_wheel">
+        <!--origin xyz="0.1 0.13 0.1" rpy="0 1.5707 1.5707"/-->
+        <collision name="collision">
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <geometry>
+            <cylinder radius="0.14" length="0.07"/>
+        </geometry>
+        </collision>
+        <visual name="left_wheel_visual">
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <geometry>
+            <cylinder radius="0.14" length="0.07"/>
+        </geometry>
+        <material name="black"/>
+        </visual>
+        <inertial>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <mass value="5"/>
+        <cylinder_inertia m="5" r="0.14" h="0.07"/>
+        <inertia
+            ixx="1.0" ixy="0.0" ixz="0.0"
+            iyy="1.0" iyz="0.0"
+            izz="1.0"/>
+        </inertial>
+    </link>
+
+    <link name="right_wheel">
+        <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
+        <collision name="collision">
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <geometry>
+            <cylinder radius="0.14" length="0.07"/>
+        </geometry>
+        </collision>
+        <visual name="right_wheel_visual">
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <geometry>
+            <cylinder radius="0.14" length="0.07"/>
+        </geometry>
+        <material name="black"/>
+        </visual>
+        <inertial>
+        <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
+        <mass value="5"/>
+        <cylinder_inertia m="5" r="0.14" h="0.07"/>
+        <inertia
+            ixx="1.0" ixy="0.0" ixz="0.0"
+            iyy="1.0" iyz="0.0"
+            izz="1.0"/>
+        </inertial>
+    </link>
+
+    <joint type="continuous" name="left_wheel_hinge">
+        <origin xyz="0 0.2 -0.061" rpy="0 0 0"/>
+        <child link="left_wheel"/>
+        <parent link="DDbase"/>
+        <axis xyz="0 1 0" rpy="0 0 0"/>
+        <limit effort="100" velocity="100"/>
+        <joint_properties damping="0.0" friction="0.0"/>
+    </joint>
+
+    <joint type="continuous" name="right_wheel_hinge">
+        <origin xyz="0 -0.2 -0.061" rpy="0 0 0"/>
+        <child link="right_wheel"/>
+        <parent link="DDbase"/>
+        <axis xyz="0 1 0" rpy="0 0 0"/>
+        <limit effort="100" velocity="100"/>
+        <joint_properties damping="0.0" friction="0.0"/>
+    </joint>
+
+      <!-- Camera -->
+  <link name="camera_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+  	<box size="${camera_link} ${camera_link} ${camera_link}"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+	  <box size="${camera_link} ${camera_link} ${camera_link}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.25 0 ${height3 - axel_offset*2}" rpy="0 0 0"/>
+    <parent link="DDbase"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <!-- Hokuyo Laser -->
+  <link name="hokuyo_link">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+      	<box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://dd_sim/meshe/hokuyo.dae"/>
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <joint name="hokuyo_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0 0 ${height3 - axel_offset/2}" rpy="0 0 0"/>
+    <parent link="DDbase"/>
+    <child link="hokuyo_link"/>
+  </joint>
+</robot>

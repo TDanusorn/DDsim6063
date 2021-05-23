@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!--ประกาศ robot_description ผ่าน DD.xacro-->
+  <!--pkg joint_state_publisher จะ publish topic ชื่อ /joint_states และ pkg robot_state_publisher ก็จะ subscribe /joint_states และ publish ไปยัง /tf topic -->
+ 
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find dd_sim)/model/DD.xacro'"/><!--run robot_descrition จาก file DD.xacro ที่เราสร้างหุ่นยนต์ไว้-->
+
+  <!-- send fake joint values -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
+    <param name="use_gui" value="True"/>
+  </node>
+
+  <!-- Combine joint values -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- Show in Rviz   -->
+  <!-- <node name="rviz" pkg="rviz" type="rviz"/> ใช้เปิด rviz ครั้งแรก -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find dd_sim)/rviz/config.rviz"/><!--ใช้เมื่อเรามีการ save config และต้องการใช้ config เดิมในการเปิดครั้งต่อไป-->
+   
+</launch>
